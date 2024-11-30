@@ -1,0 +1,115 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+class AttendanceSystemGUI {
+    private String[] students;
+    private boolean[] attendance;
+    private int studentCount;
+
+    // Constructor to initialize the system
+    public AttendanceSystemGUI(int totalStudents) {
+        students = new String[totalStudents];
+        attendance = new boolean[totalStudents];
+        studentCount = 0;
+    }
+
+    // Add student to the system
+    public void addStudent(String studentName) {
+        if (studentCount < students.length) {
+            students[studentCount] = studentName;
+            attendance[studentCount] = false; // Mark as absent by default
+            studentCount++;
+        }
+    }
+
+    // Mark attendance for a student
+    public void markAttendance(String studentName) {
+        for (int i = 0; i < studentCount; i++) {
+            if (students[i].equalsIgnoreCase(studentName)) {
+                attendance[i] = true;
+            }
+        }
+    }
+
+    // Get attendance details
+    public String getAttendanceList() {
+        StringBuilder attendanceList = new StringBuilder();
+        for (int i = 0; i < studentCount; i++) {
+            String status = attendance[i] ? "Present" : "Absent";
+            attendanceList.append(students[i]).append(": ").append(status).append("\n");
+        }
+        return attendanceList.toString();
+    }
+
+    public static void main(String[] args) {
+        AttendanceSystemGUI system = new AttendanceSystemGUI(5);
+
+        // Create JFrame
+        JFrame frame = new JFrame("Attendance Management System");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 400);
+        frame.setLayout(new FlowLayout());
+
+        // Components
+        JLabel studentLabel = new JLabel("Student Name:");
+        JTextField studentField = new JTextField(20);
+        JButton addButton = new JButton("Add Student");
+        JButton markButton = new JButton("Mark Attendance");
+        JButton viewButton = new JButton("View Attendance");
+        JTextArea resultArea = new JTextArea(15, 30);
+        resultArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(resultArea);
+
+        // Add Student Action
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = studentField.getText();
+                if (!name.isEmpty()) {
+                    system.addStudent(name);
+                    studentField.setText("");
+                    resultArea.setText("Student added: " + name);
+                } else {
+                    resultArea.setText("Please enter a student name.");
+                }
+            }
+        });
+
+        // Mark Attendance Action
+        markButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = studentField.getText();
+                if (!name.isEmpty()) {
+                    system.markAttendance(name);
+                    studentField.setText("");
+                    resultArea.setText("Attendance marked for: " + name);
+                } else {
+                    resultArea.setText("Please enter a student name.");
+                }
+            }
+        });
+
+        // View Attendance Action
+        viewButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String attendanceList = system.getAttendanceList();
+                resultArea.setText("Attendance List:\n" + attendanceList);
+            }
+        });
+
+        // Add Components to Frame
+        frame.add(studentLabel);
+        frame.add(studentField);
+        frame.add(addButton);
+        frame.add(markButton);
+        frame.add(viewButton);
+        frame.add(scrollPane);
+
+        // Set frame visible
+        frame.setVisible(true);
+    }
+}
